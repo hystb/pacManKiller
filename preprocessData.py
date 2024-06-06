@@ -24,3 +24,4 @@ def stack_frames(stacked_frames, frame, is_new_episode, preprocess):
     stacked_state = torch.cat(list(stacked_frames), dim=0).unsqueeze(0)
     return stacked_state, stacked_frames
 
+preprocess = PreprocessFrame()
