@@ -1,0 +1,13 @@
+opencv-python-headless==4.7.0.72
+gym==0.26.1
+--find-links https://download.pytorch.org/whl/cu121
+torch==2.0.0
+--find-links https://download.pytorch.org/whl/cu121
+torchaudio==2.0.1
+--find-links https://download.pytorch.org/whl/cu121
+torchvision==0.15.1
+gym[atari]
+numpy
+matplotlib
+matplotlib
+tqdm
