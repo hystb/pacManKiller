@@ -88,12 +88,15 @@ def train(model, env, num_episodes, batch_size, gamma, epsilon, epsilon_decay, m
 
         all_rewards.append(total_reward)
         print(f"Episode: {episode}, Reward: {total_reward}, Epsilon: {epsilon}")
-        if total_reward > max_reward or num_episodes % 1000 == 0:
-            if total_reward > max_reward:
-                max_reward = total_reward
+        if total_reward > max_reward:
+            max_reward = total_reward
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
             model_save_path = f"modelmax{total_reward}_{timestamp}.pth"
-            torch.save(model.state_dict(), model_save_path) 
+            torch.save(model.state_dict(), model_save_path)
+        if episode % 10 == 0:
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            model_save_path = f"model_{timestamp}.pth"
+            torch.save(model.state_dict(), model_save_path)
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     model_save_path = f"model_{timestamp}.pth"
     torch.save(model.state_dict(), model_save_path)
