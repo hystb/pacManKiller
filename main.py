@@ -18,8 +18,8 @@ def main():
     env = gym.make('MsPacman-v4')
 
     if args.mode == 'train':
-        num_episodes = 1000000
-        batch_size = 128
+        num_episodes = 2000000
+        batch_size = 64
         gamma = 0.99
         epsilon = 1.0
         epsilon_decay = 0.9999
