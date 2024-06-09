@@ -1,28 +1,3 @@
-# import cv2
-# from solve import *
-# from train import *
-# from DQNCNN import DQNCNN
-# import gym
-
-# device = "cuda" if torch.cuda.is_available() else "cpu"
-# print("Using {} device".format(device))
-# env = gym.make('MsPacman-v4')
-
-# num_episodes = 10
-# batch_size = 32
-# gamma = 0.99
-# epsilon = 1.0
-# epsilon_decay = 0.995
-# min_epsilon = 0.01
-# learning_rate = 0.0001
-
-
-# action_space = env.action_space.n
-# model = DQNCNN(action_space)
-
-# rewards, path = train(model, env, num_episodes, batch_size, gamma, epsilon, epsilon_decay, min_epsilon, learning_rate, device)
-# simulate_game(load_model(model, path, device), env, device)
-
 import argparse
 import torch
 import gym
@@ -43,17 +18,20 @@ def main():
     env = gym.make('MsPacman-v4')
 
     if args.mode == 'train':
-        num_episodes = 1000
-        batch_size = 32
+        num_episodes = 1000000
+        batch_size = 128
         gamma = 0.99
         epsilon = 1.0
-        epsilon_decay = 0.995
+        epsilon_decay = 0.9999
         min_epsilon = 0.01
         learning_rate = 0.0001
 
         action_space = env.action_space.n
         model = DQNCNN(action_space)
-
+        if args.path:
+            print("Model Loaded")
+            model = load_model(model, args.path, device)
+            epsilon = 0.01
         rewards, path = train(model, env, num_episodes, batch_size, gamma, epsilon, epsilon_decay, min_epsilon, learning_rate, device)
         print(f"Training complete. Model saved to {path}")
         simulate_game(model, env, device)
