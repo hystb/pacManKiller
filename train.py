@@ -13,12 +13,16 @@ import random
 
 def train(model, env, num_episodes, batch_size, gamma, epsilon, epsilon_decay, min_epsilon, learning_rate, device):
     model.to(device)
+    static_count = 1
+    max_reward = 0
+    count_frame = 1
     optimizer = optim.Adam(model.parameters(), lr=learning_rate)
     loss_fn = nn.MSELoss()
     replay_buffer = deque(maxlen=10000)
     all_rewards = []
 
     for episode in range(num_episodes):
+        last_info = {'ale.lives': 3}
         state = env.reset()
         stacked_frames = deque([preprocess(state) for _ in range(4)], maxlen=4)
         stacked_state, _ = stack_frames(stacked_frames, state, True, preprocess)
@@ -33,9 +37,19 @@ def train(model, env, num_episodes, batch_size, gamma, epsilon, epsilon_decay, m
                     q_values = model(stacked_state)
                     action = torch.argmax(q_values).item()
 
-            next_state, reward, done, _ = env.step(action)
+            next_state, reward, done, info = env.step(action)
+            if info['ale.lives'] < last_info['ale.lives']:
+                last_info = info
+                reward -= 50
+            if reward == 0:
+                static_count += 1
+            else:
+                static_count = 1
+            if static_count % 100 == 0:
+                reward -= 20
             # frame = env.render(mode='rgb_array')
             total_reward += reward
+            
             next_stacked_state, stacked_frames = stack_frames(stacked_frames, next_state, False, preprocess)
             
             replay_buffer.append((stacked_state, action, reward, next_stacked_state, done))
@@ -66,13 +80,19 @@ def train(model, env, num_episodes, batch_size, gamma, epsilon, epsilon_decay, m
                 optimizer.zero_grad()
                 loss.backward()
                 optimizer.step()
-
-            if done:
+            count_frame += 1
+            if done or count_frame > 2000000:
                 epsilon = max(min_epsilon, epsilon * epsilon_decay)
+                count_frame = 0
                 break
 
         all_rewards.append(total_reward)
         print(f"Episode: {episode}, Reward: {total_reward}, Epsilon: {epsilon}")
+        if total_reward > max_reward:
+            max_reward = total_reward
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            model_save_path = f"modelmax{total_reward}_{timestamp}.pth"
+            torch.save(model.state_dict(), model_save_path) 
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     model_save_path = f"model_{timestamp}.pth"
     torch.save(model.state_dict(), model_save_path)
