@@ -8,7 +8,7 @@ import cv2
 
 def main():
     parser = argparse.ArgumentParser(description="Train or execute a DQN model for Ms. Pacman")
-    parser.add_argument('--mode', choices=['train', 'execute'], required=True, help="Choose whether to train a new model or execute an existing one")
+    parser.add_argument('--mode', choices=['train', 'execute'], required=True, help="Choose whether to train a model or execute an existing one")
     parser.add_argument('--path', type=str, help="Path to the pre-trained model (required for execution mode)")
 
     args = parser.parse_args()
@@ -19,7 +19,7 @@ def main():
 
     if args.mode == 'train':
         num_episodes = 2000000
-        batch_size = 64
+        batch_size = 128
         gamma = 0.99
         epsilon = 1.0
         epsilon_decay = 0.9999
