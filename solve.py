@@ -38,7 +38,7 @@ def simulate_game(model, env, device):
         
         resized_frame = cv2.resize(frame, window_size)  
         cv2.imshow('Ms. Pacman', resized_frame)
-        if cv2.waitKey(int(1000/60)) & 0xFF == ord('q'):
+        if cv2.waitKey(int(1000/120)) & 0xFF == ord('q'):
             break
         if done:
             break
